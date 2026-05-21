@@ -1,0 +1,220 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800">
+  <defs>
+    <!-- 背景渐变 -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#1e293b" />
+    </linearGradient>
+
+    <!-- 左侧试管玻璃材质（倒出） -->
+    <linearGradient id="glassLeft" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.4)" />
+      <stop offset="25%" stop-color="rgba(255,255,255,0.05)" />
+      <stop offset="75%" stop-color="rgba(255,255,255,0.05)" />
+      <stop offset="100%" stop-color="rgba(255,255,255,0.3)" />
+    </linearGradient>
+
+    <!-- 右侧试管玻璃材质（承接） -->
+    <linearGradient id="glassRight" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="rgba(255,255,255,0.3)" />
+      <stop offset="25%" stop-color="rgba(255,255,255,0.05)" />
+      <stop offset="75%" stop-color="rgba(255,255,255,0.05)" />
+      <stop offset="100%" stop-color="rgba(255,255,255,0.4)" />
+    </linearGradient>
+
+    <!-- 左侧液体渐变（粉紫） -->
+    <linearGradient id="liquidLeft" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fa709a" />
+      <stop offset="100%" stop-color="#fee140" />
+    </linearGradient>
+
+    <!-- 右侧液体渐变（蓝绿） -->
+    <linearGradient id="liquidRight" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#00f2fe" />
+      <stop offset="100%" stop-color="#4facfe" />
+    </linearGradient>
+
+    <!-- 倒水水柱渐变 -->
+    <linearGradient id="pourGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fa709a" />
+      <stop offset="50%" stop-color="#4facfe" />
+      <stop offset="100%" stop-color="#00f2fe" />
+    </linearGradient>
+
+    <!-- 阴影与发光滤镜 -->
+    <filter id="dropShadow" x="-30%" y="-20%" width="160%" height="150%">
+      <feDropShadow dx="0" dy="20" stdDeviation="20" flood-color="#000" flood-opacity="0.6" />
+    </filter>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="10" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+    <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="5" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- 背景 -->
+  <rect width="800" height="800" rx="100" fill="url(#bgGrad)" />
+
+  <!-- 环境光晕 -->
+  <circle cx="600" cy="400" r="300" fill="rgba(0, 242, 254, 0.08)" />
+  <circle cx="250" cy="250" r="300" fill="rgba(250, 112, 154, 0.08)" />
+
+  <!-- ==================== 右侧直立试管（承接） ==================== -->
+  <g transform="translate(580, 480)" filter="url(#dropShadow)">
+    <!-- 试管玻璃主体 -->
+    <!-- 总宽度 200（X: -100 到 100），高度 550（Y: -290 到 260） -->
+    <path d="M -100,260 A 100,32 0 0,0 100,260 L 100,-260 A 100,32 0 0,0 100,-290 L -100,-290 A 100,32 0 0,1 -100,-260 Z" 
+          fill="url(#glassRight)" stroke="rgba(255,255,255,0.6)" stroke-width="5" />
+
+    <!-- 试管底部高光 -->
+    <path d="M -100,260 A 100,32 0 0,0 100,260" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="3" />
+
+    <!-- 液体（蓝色） -->
+    <!-- 液体表面位置 Y = -80 -->
+    <path d="M -95,-80 L 95,-80 L 95,260 A 95,30 0 0,1 -95,260 Z" 
+          fill="url(#liquidRight)" opacity="0.95" />
+    
+    <!-- 液体表面波浪 -->
+    <path d="M -95,-80 Q -47.5,-90 0,-80 T 95,-80" 
+          fill="none" stroke="#00f2fe" stroke-width="4" stroke-linecap="round" opacity="0.9" />
+    <path d="M -95,-80 Q -47.5,-70 0,-80 T 95,-80" 
+          fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2.5" stroke-linecap="round" />
+
+    <!-- 液体内部气泡 -->
+    <circle cx="-35" cy="50" r="6" fill="rgba(255,255,255,0.4)" />
+    <circle cx="45" cy="120" r="4" fill="rgba(255,255,255,0.3)" />
+    <circle cx="-15" cy="180" r="5" fill="rgba(255,255,255,0.35)" />
+    <circle cx="25" cy="30" r="3" fill="rgba(255,255,255,0.5)" />
+    <circle cx="10" cy="220" r="3.5" fill="rgba(255,255,255,0.25)" />
+
+    <!-- 试管高光（立体感） -->
+    <path d="M -90,-200 L -90,200" stroke="rgba(255,255,255,0.5)" stroke-width="8" stroke-linecap="round" fill="none" />
+    <path d="M 90,-200 L 90,200" stroke="rgba(255,255,255,0.15)" stroke-width="4" stroke-linecap="round" fill="none" />
+
+    <!-- 试管口圆环（3D 椭圆环效果） -->
+    <ellipse cx="0" cy="-290" rx="100" ry="32" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="5" />
+    <ellipse cx="0" cy="-290" rx="92" ry="28" fill="rgba(0,0,0,0.4)" />
+    <ellipse cx="0" cy="-290" rx="85" ry="22" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2" />
+  </g>
+
+  <!-- ==================== 左侧倾斜试管（倒出） ==================== -->
+  <g transform="translate(260, 280) rotate(35)" filter="url(#dropShadow)">
+    <!-- 试管玻璃主体 -->
+    <!-- 总宽度 180（X: -90 到 90），高度 525（Y: -275 到 250） -->
+    <path d="M -90,250 A 90,28 0 0,0 90,250 L 90,-250 A 90,28 0 0,0 90,-275 L -90,-275 A 90,28 0 0,1 -90,-250 Z" 
+          fill="url(#glassLeft)" stroke="rgba(255,255,255,0.6)" stroke-width="5" />
+
+    <!-- 试管底部高光 -->
+    <path d="M -90,250 A 90,28 0 0,0 90,250" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="3" />
+
+    <!-- 液体（粉紫色） -->
+    <!-- 液体表面位置 Y = -120 -->
+    <path d="M -85,-120 L 85,-120 L 85,250 A 85,26 0 0,1 -85,250 Z" 
+          fill="url(#liquidLeft)" opacity="0.95" />
+    
+    <!-- 液体表面波浪 -->
+    <path d="M -85,-120 Q -42.5,-130 0,-120 T 85,-120" 
+          fill="none" stroke="#fa709a" stroke-width="4" stroke-linecap="round" opacity="0.9" />
+    <path d="M -85,-120 Q -42.5,-110 0,-120 T 85,-120" 
+          fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2.5" stroke-linecap="round" />
+
+    <!-- 液体内部气泡 -->
+    <circle cx="-25" cy="0" r="5" fill="rgba(255,255,255,0.4)" />
+    <circle cx="35" cy="80" r="4" fill="rgba(255,255,255,0.3)" />
+    <circle cx="-15" cy="160" r="3.5" fill="rgba(255,255,255,0.35)" />
+    <circle cx="0" cy="-50" r="2.5" fill="rgba(255,255,255,0.5)" />
+
+    <!-- 试管高光 -->
+    <path d="M -80,-210 L -80,200" stroke="rgba(255,255,255,0.5)" stroke-width="7" stroke-linecap="round" fill="none" />
+    <path d="M 80,-210 L 80,200" stroke="rgba(255,255,255,0.15)" stroke-width="3" stroke-linecap="round" fill="none" />
+
+    <!-- 试管口圆环 -->
+    <ellipse cx="0" cy="-275" rx="90" ry="28" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="5" />
+    <ellipse cx="0" cy="-275" rx="83" ry="24" fill="rgba(0,0,0,0.4)" />
+    <ellipse cx="0" cy="-275" rx="75" ry="18" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2" />
+  </g>
+
+  <!-- ==================== 倒水水柱与飞溅 ==================== -->
+  <g filter="url(#glow)">
+    <!-- 主水柱路径 -->
+    <!-- 从左侧试管口（全局 102, 55）到右侧试管口（580, 190） -->
+    <path d="M 102,55 C 260,110 380,180 580,190 L 580,215 C 380,205 260,135 102,80 Z" 
+          fill="url(#pourGrad)" opacity="0.85" />
+
+    <!-- 水柱高光 -->
+    <path d="M 102,55 C 260,110 380,180 580,190" 
+          fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="5" stroke-linecap="round" />
+
+    <!-- 中间水柱加强光效 -->
+    <path d="M 220,115 C 340,160 440,205 520,220" 
+          fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="3" stroke-linecap="round" />
+
+    <!-- 飞溅水滴 -->
+    <!-- 左侧飞溅（倒出时） -->
+    <circle cx="85" cy="70" r="8" fill="#fa709a" opacity="0.9" />
+    <circle cx="70" cy="90" r="5" fill="#fee140" opacity="0.8" />
+    <circle cx="95" cy="100" r="4" fill="white" opacity="0.7" />
+    <circle cx="110" cy="65" r="3.5" fill="#fa709a" opacity="0.8" />
+    
+    <!-- 中心飞溅（水柱中部） -->
+    <circle cx="260" cy="140" r="6" fill="#4facfe" opacity="0.9" />
+    <circle cx="340" cy="155" r="5" fill="#00f2fe" opacity="0.8" />
+    <circle cx="280" cy="165" r="4" fill="white" opacity="0.6" />
+    <circle cx="400" cy="195" r="5.5" fill="#fa709a" opacity="0.8" />
+    <circle cx="420" cy="185" r="3" fill="white" opacity="0.7" />
+    
+    <!-- 右侧飞溅（落入承接试管时） -->
+    <circle cx="560" cy="185" r="8" fill="#00f2fe" opacity="0.9" />
+    <circle cx="580" cy="210" r="6" fill="#4facfe" opacity="0.8" />
+    <circle cx="600" cy="190" r="5" fill="white" opacity="0.8" />
+    <circle cx="550" cy="220" r="4" fill="white" opacity="0.6" />
+    <circle cx="620" cy="205" r="3.5" fill="#4facfe" opacity="0.7" />
+
+    <!-- 空中悬浮小液滴 -->
+    <circle cx="190" cy="100" r="4" fill="rgba(250,112,154,0.8)" />
+    <circle cx="320" cy="160" r="3" fill="rgba(0,242,254,0.7)" />
+    <circle cx="460" cy="210" r="3.5" fill="rgba(255,255,255,0.6)" />
+    <circle cx="520" cy="230" r="2.5" fill="rgba(79,172,254,0.7)" />
+    <circle cx="150" cy="85" r="2" fill="rgba(255,255,255,0.8)" />
+    <circle cx="480" cy="215" r="2" fill="rgba(250,112,154,0.7)" />
+  </g>
+
+  <!-- ==================== 装饰性科技感元素 ==================== -->
+  <!-- 底部分子结构（增大尺寸并下移） -->
+  <g transform="translate(400, 720)" opacity="0.5">
+    <!-- 中心原子 -->
+    <circle cx="0" cy="0" r="10" fill="#4facfe" filter="url(#softGlow)" />
+    <!-- 连接线 -->
+    <line x1="0" y1="0" x2="-45" y2="-30" stroke="#4facfe" stroke-width="3" />
+    <line x1="0" y1="0" x2="45" y2="-30" stroke="#fa709a" stroke-width="3" />
+    <line x1="0" y1="0" x2="0" y2="50" stroke="#fee140" stroke-width="3" />
+    <line x1="0" y1="0" x2="-50" y2="25" stroke="#00f2fe" stroke-width="3" />
+    <line x1="0" y1="0" x2="50" y2="25" stroke="#fa709a" stroke-width="3" />
+    
+    <!-- 周围原子 -->
+    <circle cx="-45" cy="-30" r="6" fill="#00f2fe" />
+    <circle cx="45" cy="-30" r="6" fill="#fa709a" />
+    <circle cx="0" cy="50" r="6" fill="#fee140" />
+    <circle cx="-50" cy="25" r="6" fill="#4facfe" />
+    <circle cx="50" cy="25" r="6" fill="#fa709a" />
+  </g>
+
+  <!-- 四周装饰粒子 -->
+  <circle cx="140" cy="620" r="5" fill="rgba(0,242,254,0.6)" />
+  <circle cx="180" cy="680" r="3" fill="rgba(79,172,254,0.5)" />
+  <circle cx="100" cy="700" r="2.5" fill="rgba(255,255,255,0.4)" />
+  <circle cx="700" cy="150" r="6" fill="rgba(250,112,154,0.6)" />
+  <circle cx="660" cy="120" r="4" fill="rgba(254,225,64,0.5)" />
+  <circle cx="730" cy="180" r="4.5" fill="rgba(255,255,255,0.4)" />
+  <circle cx="150" cy="200" r="3" fill="rgba(0,242,254,0.5)" />
+  <circle cx="680" cy="600" r="3.5" fill="rgba(250,112,154,0.5)" />
+</svg>

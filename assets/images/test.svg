@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800">
+  <rect width="800" height="800" fill="white" />
+  <g transform="translate(400, 400)">
+    <!-- 试管主体：底部半圆半径22，顶部水平线宽度增加（从-124到124），左右圆弧向外凸 -->
+    <path d="M -100,260 
+             A 100,22 0 0,0 100,260 
+             L 100,-236 
+             A 24,24 0 0,1 124,-260 
+             L -124,-260 
+             A 24,24 0 0,1 -100,-236 
+             Z" 
+          fill="rgba(0,0,0,0.05)" 
+          stroke="black" 
+          stroke-width="4" 
+          stroke-linejoin="round" />
+
+    <!-- 液体：内部高度90%，液面顶部在Y=-186 -->
+    <path d="M -95,260 
+             A 95,20 0 0,0 95,260 
+             L 95,-186 
+             L -95,-186 
+             Z" 
+          fill="#00f2fe" 
+          opacity="0.95" />
+
+    <!-- 液体表面波浪 -->
+    <path d="M -95,-186 Q -47.5,-196 0,-186 T 95,-186" 
+          fill="none" 
+          stroke="#00f2fe" 
+          stroke-width="4" 
+          stroke-linecap="round" 
+          opacity="0.9" />
+  </g>
+</svg>
