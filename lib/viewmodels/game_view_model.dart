@@ -27,6 +27,8 @@ class GameViewModel with ChangeNotifier {
   final List<GameState> _redoStack = [];
   /// 计时器
   Timer? _timer;
+  /// 倒水超时计时器
+  Timer? _pourTimeoutTimer;
   /// 开始时间
   int _startTime = 0;
   /// 正在倒水状态
@@ -102,18 +104,24 @@ class GameViewModel with ChangeNotifier {
 
   /// 选择试管
   void selectTube(int index) {
-    if (_isPouring  || _currentState == null || _currentState!.isCompleted) {
+    if (_currentState == null || _currentState!.isCompleted) {
       return;
     }
 
+    if (_isPouring) {
+      if (!_pourAnimationState.isActive) {
+        _isPouring = false;
+      } else {
+        return;
+      }
+    }
+
     final selectedIndex = _currentState!.selectedTubeIndex;
-    // 点击已选中试管：取消选中
     if (selectedIndex == index) {
       _currentState = _currentState!.copyWith(selectedTubeIndex: null);
       notifyListeners();
       return;
     }
-    // 没有选中试管：选中当前试管
     if (selectedIndex == null) {
       if (!_currentState!.tubes[index].isEmpty) {
         _currentState = _currentState!.copyWith(selectedTubeIndex: index);
@@ -122,7 +130,6 @@ class GameViewModel with ChangeNotifier {
       return;
     }
 
-    // 判断是否可以倒水
     final fromTube = _currentState!.tubes[selectedIndex];
     final toTube = _currentState!.tubes[index];
     if (fromTube.isEmpty ||
@@ -131,7 +138,6 @@ class GameViewModel with ChangeNotifier {
       return;
     }
 
-    // 设置倒水动画状态
     _message = '';
     _isPouring = true;
     _pourFromIndex = selectedIndex;
@@ -142,11 +148,20 @@ class GameViewModel with ChangeNotifier {
       sourceTubeIndex: selectedIndex,
       targetTubeIndex: index,
     );
+
+    _pourTimeoutTimer?.cancel();
+    _pourTimeoutTimer = Timer(const Duration(seconds: 3), () {
+      if (_isPouring) {
+        cancelPour();
+      }
+    });
+
     notifyListeners();
   }
 
   /// 倒水操作
   void pourLiquid() {
+    _pourTimeoutTimer?.cancel();
     _pourAnimationState = const PourAnimationState();
 
     if (_pourFromIndex == null || _pourToIndex == null) {
@@ -199,6 +214,7 @@ class GameViewModel with ChangeNotifier {
 
   /// 取消倒水（动画失败时调用）
   void cancelPour() {
+    _pourTimeoutTimer?.cancel();
     _isPouring = false;
     _pourFromIndex = null;
     _pourToIndex = null;
@@ -399,6 +415,7 @@ class GameViewModel with ChangeNotifier {
   @override
   void dispose() {
     _timer?.cancel();
+    _pourTimeoutTimer?.cancel();
     super.dispose();
   }
   // endregion

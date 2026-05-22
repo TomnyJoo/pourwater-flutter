@@ -1,5 +1,9 @@
 # Pour Water Game
 
+![Version](https://img.shields.io/badge/version-1.0.4-blue.svg)
+![Flutter](https://img.shields.io/badge/Flutter-3.0%2B-green.svg)
+![Dart](https://img.shields.io/badge/Dart-3.0%2B-blue.svg)
+
 一个基于 Flutter 开发的彩色倒水益智游戏。
 
 ## 🎮 游戏简介
@@ -134,6 +138,33 @@ MIT License - 详见 [LICENSE](LICENSE) 文件
 
 如有问题或建议，请通过以下方式联系：
 - GitHub Issues: [提交问题](https://github.com/TomnyJoo/pourwater-flutter/issues)
+
+## 📜 更新日志
+
+### v1.0.4 (2026-05-22)
+- 优化首页卡片式难度选择界面
+- 添加深色模式支持
+- 实现卡片入场动画效果
+- 版权信息动态读取版本号
+- 项目文档更新
+
+### v1.0.3
+- 添加音效支持
+- 优化倒水动画效果
+- 添加游戏记录功能
+
+### v1.0.2
+- 修复液体绘制bug
+- 优化游戏性能
+
+### v1.0.1
+- 添加智能提示系统
+- 实现自动保存功能
+
+### v1.0.0
+- 初始版本发布
+- 支持四种难度级别
+- 实现核心游戏玩法
 
 ---
 

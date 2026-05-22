@@ -53,6 +53,7 @@ class _FluidPourAnimationState extends State<FluidPourAnimation>
   @override
   void initState() {
     super.initState();
+    
     _animationController = PourAnimationController(
       vsync: this,
       animationSpeed: widget.settings.animationSpeed,
@@ -132,8 +133,16 @@ class _FluidPourAnimationState extends State<FluidPourAnimation>
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        _buildTargetTube(),
-        _buildSourceTube(),
+        Positioned(
+          left: widget.sourcePosition.dx - widget.tubeWidth / 2,
+          top: widget.sourcePosition.dy,
+          child: _buildSourceTube(),
+        ),
+        Positioned(
+          left: widget.targetPosition.dx - widget.tubeWidth / 2,
+          top: widget.targetPosition.dy,
+          child: _buildTargetTube(),
+        ),
         if (_animState.phase == PourAnimationPhase.pouring)
           _buildLiquidFlow(),
       ],
@@ -141,17 +150,13 @@ class _FluidPourAnimationState extends State<FluidPourAnimation>
   }
 
   Widget _buildTargetTube() {
-    return Positioned(
-      left: widget.targetPosition.dx - widget.tubeWidth / 2,
-      top: widget.targetPosition.dy,
-      child: TubeWidget(
-        width: widget.tubeWidth,
-        height: widget.tubeHeight,
-        tube: _animatedToTube ?? widget.toTube,
-        isSelected: false,
-        isColorBlindMode: widget.settings.colorBlindMode,
-        onTap: () {},
-      ),
+    return TubeWidget(
+      width: widget.tubeWidth,
+      height: widget.tubeHeight,
+      tube: _animatedToTube ?? widget.toTube,
+      isSelected: false,
+      isColorBlindMode: widget.settings.colorBlindMode,
+      onTap: () {},
     );
   }
 
@@ -160,9 +165,18 @@ class _FluidPourAnimationState extends State<FluidPourAnimation>
     final tiltAngle = _animState.tiltAngle;
     final rotationOrigin = _animState.rotationOrigin;
 
-    return Positioned(
-      left: position.dx - widget.tubeWidth / 2,
-      top: position.dy,
+    // 使用动画位置，如果没有则使用原始位置
+    final effectivePosition = position == Offset.zero
+        ? widget.sourcePosition
+        : position;
+
+    final offset = Offset(
+      effectivePosition.dx - widget.sourcePosition.dx,
+      effectivePosition.dy - widget.sourcePosition.dy,
+    );
+
+    return Transform.translate(
+      offset: offset,
       child: Transform.rotate(
         angle: tiltAngle * pi / 180,
         origin: rotationOrigin,
@@ -179,35 +193,35 @@ class _FluidPourAnimationState extends State<FluidPourAnimation>
   }
 
   Widget _buildLiquidFlow() {
-    // 使用状态中预计算的倒水点
     final sourcePoint = _animState.pourStartPoint;
     final targetPoint = _animState.pourEndPoint;
 
-    // 计算倾斜后的实际倒水起点
     double actualSourceX = sourcePoint.dx;
     double actualSourceY = sourcePoint.dy;
     
     if (_animState.tiltAngle != 0) {
       final angleRad = _animState.tiltAngle * pi / 180;
-      // 倾斜时，以接触点为轴心旋转，计算实际倒水点位置
       if (_animState.isTargetOnLeft) {
-        // 向左倾斜：左上角向下移动
         actualSourceY = sourcePoint.dy + widget.tubeWidth * sin(angleRad).abs();
       } else {
-        // 向右倾斜：右上角向下移动
         actualSourceY = sourcePoint.dy + widget.tubeWidth * sin(angleRad).abs();
       }
     }
 
+    final paintSize = Size(
+      (targetPoint.dx - actualSourceX).abs() + widget.tubeWidth * 2,
+      (targetPoint.dy - actualSourceY).abs() + widget.tubeWidth * 2,
+    );
+
     return Positioned(
-      left: 0,
-      top: 0,
+      left: min(actualSourceX, targetPoint.dx) - widget.tubeWidth,
+      top: min(actualSourceY, targetPoint.dy) - widget.tubeWidth,
       child: CustomPaint(
-        size: Size.infinite,
+        size: paintSize.isEmpty ? const Size(100, 100) : paintSize,
         painter: LiquidFlowPainter(
           liquidColor: widget.liquidColor,
-          sourcePoint: Offset(actualSourceX, actualSourceY),
-          targetPoint: targetPoint,
+          sourcePoint: Offset(actualSourceX - min(actualSourceX, targetPoint.dx) + widget.tubeWidth, actualSourceY - min(actualSourceY, targetPoint.dy) + widget.tubeWidth),
+          targetPoint: Offset(targetPoint.dx - min(actualSourceX, targetPoint.dx) + widget.tubeWidth, targetPoint.dy - min(actualSourceY, targetPoint.dy) + widget.tubeWidth),
           progress: _animState.pourProgress,
           tubeWidth: widget.tubeWidth,
         ),

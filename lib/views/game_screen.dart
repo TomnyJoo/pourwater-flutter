@@ -40,7 +40,6 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   void _onStateChanged() {
     if (mounted) {
       final currentMessage = _viewModel.message;
-      // 当消息发生变化时显示提示
       if (currentMessage != '' && currentMessage != _previousMessage) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -51,6 +50,14 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
           );
         });
         _previousMessage = currentMessage;
+      }
+
+      final state = _viewModel.currentState;
+      if (state != null) {
+        for (int i = 0; i < state.tubes.length; i++) {
+          _tubeKeys.putIfAbsent(i, () => GlobalKey());
+        }
+        _tubeKeys.removeWhere((key, _) => key >= state.tubes.length);
       }
 
       setState(() {});
@@ -89,14 +96,6 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
       final audioViewModel = context.read<AudioViewModel>();
       if (audioViewModel.settings.musicEnabled && !audioViewModel.isMusicPlaying) {
         audioViewModel.resumeMusic();
-      }
-
-      // 初始化试管键
-      final state = _viewModel.currentState;
-      if (state != null) {
-        for (int i = 0; i < state.tubes.length; i++) {
-          _tubeKeys[i] = GlobalKey();
-        }
       }
     });
   }
@@ -406,10 +405,10 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                 child: Builder(
                   builder: (context) {
                     final index = row * columns + col;
-                    final animState = viewModel.pourAnimationState;
-                    final isAnimatingTube =
-                        animState.sourceTubeIndex == index ||
-                        animState.targetTubeIndex == index;
+
+                    final isAnimatingTube = viewModel.pourAnimationState.isActive &&
+                          (viewModel.pourAnimationState.sourceTubeIndex == index ||
+                           viewModel.pourAnimationState.targetTubeIndex == index);
 
                     return AnimatedOpacity(
                       opacity: isAnimatingTube ? 0.0 : 1.0,
@@ -439,6 +438,9 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     
     if (!animState.isActive) return const SizedBox();
 
+    final effectiveTubeWidth = tubeWidth > 0 ? tubeWidth : 60.0;
+    final effectiveTubeHeight = tubeHeight > 0 ? tubeHeight : 120.0;
+
     final sourceIndex = animState.sourceTubeIndex;
     final targetIndex = animState.targetTubeIndex;
     
@@ -449,53 +451,74 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     final pourVolume = fromTube.topLiquid?.volume ?? 0;
     final liquidColor = fromTube.topLiquid?.color ?? Colors.transparent;
 
+    Offset sourceTopCenter;
+    Offset targetTopCenter;
+
     final sourceKey = _tubeKeys[sourceIndex];
     final targetKey = _tubeKeys[targetIndex];
 
-    if (sourceKey?.currentContext == null ||
-        targetKey?.currentContext == null ||
-        _gameAreaKey.currentContext == null) {
-      return const SizedBox();
+    if (sourceKey?.currentContext != null &&
+        targetKey?.currentContext != null &&
+        _gameAreaKey.currentContext != null) {
+      final gameAreaRenderBox = _gameAreaKey.currentContext!
+          .findRenderObject() as RenderBox;
+      final sourceRenderBox = sourceKey!.currentContext!
+          .findRenderObject() as RenderBox;
+      final targetRenderBox = targetKey!.currentContext!
+          .findRenderObject() as RenderBox;
+
+      final sourcePosition = gameAreaRenderBox.globalToLocal(
+          sourceRenderBox.localToGlobal(Offset.zero)
+      );
+      final targetPosition = gameAreaRenderBox.globalToLocal(
+          targetRenderBox.localToGlobal(Offset.zero)
+      );
+
+      sourceTopCenter = Offset(
+          sourcePosition.dx + sourceRenderBox.size.width / 2,
+          sourcePosition.dy
+      );
+      targetTopCenter = Offset(
+          targetPosition.dx + targetRenderBox.size.width / 2,
+          targetPosition.dy
+      );
+    } else {
+      final gameAreaWidth = MediaQuery.of(context).size.width;
+      final columns = (state.tubes.length / 4).ceil();
+      final spacing = (gameAreaWidth - effectiveTubeWidth * columns) / (columns + 1);
+
+      final sourceCol = sourceIndex % columns;
+      final sourceRow = sourceIndex ~/ columns;
+      final targetCol = targetIndex % columns;
+      final targetRow = targetIndex ~/ columns;
+
+      sourceTopCenter = Offset(
+          spacing + sourceCol * (effectiveTubeWidth + spacing) + effectiveTubeWidth / 2,
+          spacing + sourceRow * (effectiveTubeHeight + spacing)
+      );
+      targetTopCenter = Offset(
+          spacing + targetCol * (effectiveTubeWidth + spacing) + effectiveTubeWidth / 2,
+          spacing + targetRow * (effectiveTubeHeight + spacing)
+      );
     }
 
-    final gameAreaRenderBox = _gameAreaKey.currentContext!
-        .findRenderObject() as RenderBox;
-    final sourceRenderBox = sourceKey!.currentContext!
-        .findRenderObject() as RenderBox;
-    final targetRenderBox = targetKey!.currentContext!
-        .findRenderObject() as RenderBox;
-
-    final sourcePosition = gameAreaRenderBox.globalToLocal(
-        sourceRenderBox.localToGlobal(Offset.zero)
-    );
-    final targetPosition = gameAreaRenderBox.globalToLocal(
-        targetRenderBox.localToGlobal(Offset.zero)
-    );
-
-    final sourceTopCenter = Offset(
-        sourcePosition.dx + sourceRenderBox.size.width / 2,
-        sourcePosition.dy
-    );
-    final targetTopCenter = Offset(
-        targetPosition.dx + targetRenderBox.size.width / 2,
-        targetPosition.dy
-    );
-
-    return FluidPourAnimation(
-      sourcePosition: sourceTopCenter,
-      targetPosition: targetTopCenter,
-      liquidColor: liquidColor,
-      tubeWidth: tubeWidth,
-      tubeHeight: tubeHeight,
-      fromTube: fromTube,
-      toTube: toTube,
-      pourVolume: pourVolume,
-      sourceIndex: sourceIndex,
-      targetIndex: targetIndex,
-      onComplete: () {
-        viewModel.pourLiquid();
-      },
-      settings: _settings,
+    return Positioned.fill(
+      child: FluidPourAnimation(
+        sourcePosition: sourceTopCenter,
+        targetPosition: targetTopCenter,
+        liquidColor: liquidColor,
+        tubeWidth: effectiveTubeWidth,
+        tubeHeight: effectiveTubeHeight,
+        fromTube: fromTube,
+        toTube: toTube,
+        pourVolume: pourVolume,
+        sourceIndex: sourceIndex,
+        targetIndex: targetIndex,
+        onComplete: () {
+          viewModel.pourLiquid();
+        },
+        settings: _settings,
+      ),
     );
   }
 
